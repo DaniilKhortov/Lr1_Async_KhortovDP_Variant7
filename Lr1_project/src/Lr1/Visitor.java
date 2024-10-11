@@ -27,7 +27,7 @@ public class Visitor implements Runnable {
             switch (favourGenerator.nextInt(4)){
                 case 0:
                     Main.the1984.acquire();
-                    System.out.printf("Відвідувач з потоку %s обрав книгу 1984 відомого автора Д. Орвелла. \n", Thread.currentThread().getName());
+                    System.out.printf("Відвідувач з потоку %s обрав книгу '1984' відомого автора Д. Орвелла. \n", Thread.currentThread().getName());
                     Thread.sleep(20);
                     System.out.printf("Чудовий вибір! \n");
                     Thread.sleep(20);
@@ -101,7 +101,7 @@ public class Visitor implements Runnable {
 
 
                 case 3:
-                    Main.theDavinciCode.acquire();
+                    Main.theDaVinciCode.acquire();
                     System.out.printf("Відвідувач з потоку %s обрав книгу 'Код Да Вінчі' сучасного письменника Дена Брауна. \n", Thread.currentThread().getName());
                     Thread.sleep(20);
                     System.out.printf("Гарний вибір! \n");
@@ -123,16 +123,15 @@ public class Visitor implements Runnable {
                     Thread.sleep(20);
 
                     System.out.printf(byeOptions[randomIndex]);
-                    Main.theDavinciCode.release();
+                    Main.theDaVinciCode.release();
                     break;
             }
 
         } catch (InterruptedException e) {
             //Визначення місцезнаходження відвідувача та відповідна реакція бібліотеки
             if(!isHome){
-                System.out.printf("Адміністрація просить відвідувача з потоку %s покинути бібліотеку. \n", Thread.currentThread().getName());
 
-                System.err.printf("Відвідувач з потоку %s покинув залу. \n", Thread.currentThread().getName());
+                System.err.printf("Відвідувач з потоку %s вимушений був покинути залу. \n", Thread.currentThread().getName());
             }else{
                 System.err.printf("Відвідувач з потоку %s вже не може повернути книгу сьогодні. \n", Thread.currentThread().getName());
             }

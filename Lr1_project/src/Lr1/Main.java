@@ -2,16 +2,16 @@ package Lr1;
 
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Semaphore;
-import java.util.Random;
 
 public class Main {
 	//Обмеження кількості книг
 	static final Semaphore theArtOfWar = new Semaphore(3);
 	static final Semaphore the1984 = new Semaphore(3);
 	static final Semaphore the2001SpaceOdyssey = new Semaphore(3);
-	static final Semaphore theDavinciCode = new Semaphore(3);
+	static final Semaphore theDaVinciCode = new Semaphore(3);
 
 	//Змінна, що відповідає за відкриття/закриття бібліотеки
 	private static boolean isAvailableHours = true;
@@ -29,14 +29,14 @@ public class Main {
 
 	//Запуск коду
 	public static void main(String[] args) throws InterruptedException {
+		//Колекція потоків відвідувачів. Є синхронізованим, щоб потоки взаємодіяли з колекцією по-черзі
+		List<Thread> threadList = Collections.synchronizedList(new ArrayList<>());
 
 		//Ініцііалізація потоку бібліотеки
 		Runnable library = () -> {
 			//Лічильник потоків
 			int i = 0;
 
-			//Колекція потоків відвідувачів
-			List<Thread> threadList = new ArrayList<>();
 
 			//Цикл ініціалізації та запуску потоків відвідувачів
 			while(isOpen()) {
@@ -54,6 +54,7 @@ public class Main {
 				// Обробка аварійного переривання потоку бібліотеки
 				try {
 					Thread.sleep(1000);
+
 				} catch (InterruptedException e) {
 
 					e.printStackTrace();
@@ -64,6 +65,12 @@ public class Main {
 			for (Thread thread : threadList) {
 				if (thread.isAlive()) {
 					thread.interrupt();
+					//Синхронізація переривань потоків
+					try {
+						thread.join();
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
 				}
 			}
 		};
@@ -72,14 +79,20 @@ public class Main {
 		Thread libraryThread = new Thread(library, "Бібліотека");
 		libraryThread.start();
 
+
 		//Час роботи бібліотеки
 		Thread.sleep(12000);
 
 		//Зупинка потоку бібліотеки
 		closeLibrary();
 
-		//Час на переривання активних потоків
-		Thread.sleep(1000);
+		//Синхронізація потоків
+		for (Thread thread : threadList) {
+				thread.join();
+		}
+
+
+
 		System.err.println("=============Бібліотекарі пішли додому================");
 	}
 }
